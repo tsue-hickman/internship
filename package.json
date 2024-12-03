@@ -1,0 +1,43 @@
+{
+  "name": "afterwipe",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --fix",
+    "format": "prettier --write src/"
+  },
+  "dependencies": {
+    "@mdi/font": "^7.4.47",
+    "@tweenjs/tween.js": "^25.0.0",
+    "@vueuse/sound": "^2.0.1",
+    "chart.js": "^4.4.6",
+    "date-fns": "^4.1.0",
+    "express": "^4.21.1",
+    "gsap": "^3.12.5",
+    "particles.js": "^2.0.0",
+    "pg": "^8.13.1",
+    "pinia": "^2.1.7",
+    "three": "^0.169.0",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0",
+    "vuetify": "^3.7.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "@vue/eslint-config-prettier": "^10.0.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-vue": "^9.22.0",
+    "prettier": "^3.2.5",
+    "vite": "^5.1.4",
+    "vite-plugin-vuetify": "^2.0.4"
+  },
+  "description": "This template should help get you started developing with Vue 3 in Vite.",
+  "main": "eslint.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

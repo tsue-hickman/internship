@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres_db
+    environment: 
+      POSTGRES_USER: padawan
+      POSTGRES_PASSWORD: g0f1ghtw1n
+      POSTGRES_DB: gbs_postgres
+    ports:
+      - 5432:5432
