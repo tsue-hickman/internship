@@ -1,0 +1,12 @@
+flask
+flask-sqlalchemy
+flask-migrate
+flask-cors
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+psycopg2-binary
+alembic
+python-dotenv
+faker

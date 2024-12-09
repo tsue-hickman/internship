@@ -78,7 +78,7 @@ const features = ref([
 const router = useRouter()
 
 function getStarted() {
-  router.push('/Destinations') // Redirect to the features or dashboard page
+  router.push('/destinations') // Redirect to the features or dashboard page
 }
 
 function signUp() {

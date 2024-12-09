@@ -39,10 +39,10 @@
             </v-card-title>
 
             <v-data-table
-              :items="destinations"
+              :items="paginatedDestinations"
               :headers="headers"
               :search="search"
-              :items-per-page="5"
+              :items-per-page="itemsPerPage"
               :items-per-page-options="[5, 10, 25, 50, 100]"
               class="dest-table"
               :loading="loading"
@@ -84,6 +84,15 @@
                 </tr>
               </template>
             </v-data-table>
+
+            <!-- Pagination Component -->
+            <div class="text-center pt-2">
+              <v-pagination
+                v-model="page"
+                :length="totalPages"
+                @input="changePage"
+              ></v-pagination>
+            </div>
           </v-card>
         </v-col>
       </v-row>
@@ -210,14 +219,17 @@
   </v-parallax>
 </template>
 
+
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useDestinationsStore } from '@/stores/destinations'
 import { storeToRefs } from 'pinia'
-import earthImage from '@/assets/images/destroyer.png'
+import { useToast } from 'vue-toastification'
+import earthImage from '@/assets/images/moon_nightcafe.png'
 
+const toast = useToast()
 const destinationsStore = useDestinationsStore()
-const { destinations } = storeToRefs(destinationsStore)
+const { destinations, error } = storeToRefs(destinationsStore)
 
 // State
 const loading = ref(false)
@@ -270,6 +282,21 @@ const descriptionRules = [
   v => (v && v.length <= 500) || 'Description must be less than 500 characters'
 ]
 
+// Pagination
+const page = ref(1)
+const itemsPerPage = ref(5)
+const totalPages = computed(() => Math.ceil(destinations.value.length / itemsPerPage.value))
+
+const paginatedDestinations = computed(() => {
+  const start = (page.value - 1) * itemsPerPage.value
+  const end = start + itemsPerPage.value
+  return destinations.value.slice(start, end)
+})
+
+function changePage(newPage) {
+  page.value = newPage
+}
+
 // Computed
 const formTitle = computed(() => 
   editedIndex.value === -1 ? 'New Destination' : 'Edit Destination'
@@ -283,11 +310,11 @@ onMounted(async () => {
     if (storedDestinations) {
       destinations.value = JSON.parse(storedDestinations)
     } else {
-      await destinationsStore.fetchDestinations()
+      await fetchDestinations()
     }
   } catch (error) {
     console.error('Error loading destinations:', error)
-    // You can add error handling UI here
+    toast.error('Failed to load destinations')
   } finally {
     loading.value = false
   }
@@ -299,21 +326,16 @@ watch(destinations, (newDestinations) => {
 }, { deep: true })
 
 // Methods
-function formatDateToCST(date) {
-  if (!date) return ''
-  
-  const options = {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    fractionalSecondDigits: 3,
-    timeZone: 'America/Chicago',
-    hour12: false
+async function fetchDestinations() {
+  try {
+    loading.value = true
+    await destinationsStore.fetchDestinations()
+  } catch (err) {
+    toast.error('Failed to fetch destinations')
+    console.error(err)
+  } finally {
+    loading.value = false
   }
-  return new Date(date).toLocaleString('en-US', options).replace(',', '')
 }
 
 function openDialog() {
@@ -339,13 +361,13 @@ function deleteItem(item) {
 async function deleteItemConfirm() {
   try {
     loading.value = true
-    // Here you can add API call when ready
-    // await destinationsStore.deleteDestination(editedItem.value.id)
+    await destinationsStore.deleteDestination(editedItem.value.id)
     destinations.value.splice(editedIndex.value, 1)
+    toast.success('Destination deleted successfully')
     closeDelete()
-  } catch (error) {
-    console.error('Error deleting destination:', error)
-    // Add error handling UI here
+  } catch (err) {
+    toast.error('Failed to delete destination')
+    console.error(err)
   } finally {
     loading.value = false
   }
@@ -378,33 +400,24 @@ async function save() {
       const now = new Date().toISOString()
       
       if (editedIndex.value > -1) {
-        // Editing existing destination
-        // Here you can add API call when ready
-        // await destinationsStore.updateDestination(editedItem.value)
-        Object.assign(destinations.value[editedIndex.value], {
-          ...editedItem.value,
-          createdAt: editedItem.value.createdAt || now
-        })
+        await destinationsStore.updateDestination(editedItem.value)
+        toast.success('Destination updated successfully')
       } else {
-        // Adding new destination(s)
         for (let i = 0; i < numDuplicates.value; i++) {
-          const newItem = {
+          await destinationsStore.createDestination({
             ...editedItem.value,
             id: `dest_${Date.now()}_${i}`,
             createdAt: now
-          }
-          // Here you can add API call when ready
-          // await destinationsStore.createDestination(newItem)
-          destinations.value.push(newItem)
+          })
         }
+        toast.success(`${numDuplicates.value} destination(s) created successfully`)
       }
       
       close()
       form.value.reset()
-      form.value.resetValidation()
-    } catch (error) {
-      console.error('Error saving destination:', error)
-      // Add error handling UI here
+    } catch (err) {
+      toast.error('Error saving destination')
+      console.error(err)
     } finally {
       loading.value = false
     }
@@ -415,6 +428,7 @@ function saveToLocalStorage() {
   localStorage.setItem('destinations', JSON.stringify(destinations.value))
 }
 </script>
+
 
 <style scoped>
 .destinations-container {

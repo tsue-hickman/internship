@@ -1,11 +1,37 @@
 version: '3.8'
+
 services:
+  frontend:
+    build:
+      context: .
+    volumes:
+      - ./src:/app/src
+    ports:
+      - "3000:3000"
+    command: npm run dev
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_ENV: development
+      DATABASE_URL: postgresql://padawan:g0f1ghtw1n@db:5432/gbs_postgres
+    depends_on:
+      - db
+
   db:
-    image: postgres:latest
+    image: postgres:15
     container_name: postgres_db
-    environment: 
+    environment:
       POSTGRES_USER: padawan
       POSTGRES_PASSWORD: g0f1ghtw1n
       POSTGRES_DB: gbs_postgres
     ports:
-      - 5432:5432
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

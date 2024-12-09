@@ -26,9 +26,6 @@
                   class="search-field rounded-lg"
                   hide-details
                 >
-                  <template v-slot:prepend-inner>
-                    <v-icon color="primary">mdi-magnify</v-icon>
-                  </template>
                 </v-text-field>
               </v-col>
               <v-col cols="12" md="4" class="text-right">
@@ -245,7 +242,14 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useTheme } from 'vuetify'
+import { useCustomersStore } from '@/stores/customers'
 
+//Customers.js store
+const customersStore = useCustomersStore()
+
+onMounted(() => {
+  customersStore.fetchCustomers()
+})
 
 // Theme setup
 const theme = useTheme()
