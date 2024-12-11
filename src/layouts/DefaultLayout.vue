@@ -21,28 +21,28 @@
       elevation="2"
       location="left"
       width="300"
-      
     >
       <v-list>
-        <!-- User Profile Section -->
-        <v-list-item
-          prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg"
-          :title="user ? user.username : 'Guest User'"
-        ></v-list-item>
-
-        <v-divider class="my-2"></v-divider>
-
-        <!-- Navigation Links -->
+        <!-- Navigation Items -->
         <v-list-item
           v-for="(item, index) in menuItems"
           :key="index"
-          :to="item.path"
-          :prepend-icon="item.icon"
-          :title="item.title"
-          :subtitle="item.subtitle"
-          :active="route.path === item.path"
-          @click="drawer = false"
-        />
+        >
+          <router-link
+            :to="item.path"
+            class="v-list-item"
+            :class="{ 'v-list-item--active': route.path === item.path }"
+            @click="drawer = false"
+          >
+            <v-list-item-content>
+              <v-list-item-icon>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+              <v-list-item-subtitle>{{ item.subtitle }}</v-list-item-subtitle>
+            </v-list-item-content>
+          </router-link>
+        </v-list-item>
       </v-list>
 
       <!-- Logout Button -->
@@ -80,7 +80,6 @@ import { useAuth } from '@/composables/auth'
 import { useTheme } from 'vuetify'
 import OutageNotification from '@/components/OutageNotification.vue'
 
-
 const theme = useTheme()
 const drawer = ref(false)
 const router = useRouter()
@@ -104,7 +103,8 @@ const currentPageTitle = computed(() => {
 })
 
 const showOutage = computed(() => {
-  const isOutage = true // Placeholder condition for an outage
+  // Consider making this a more dynamic check
+  const isOutage = false // Change to your actual outage detection logic
   return isOutage && route.path !== '/login'
 })
 
@@ -126,5 +126,11 @@ function toggleTheme() {
 
 .v-list {
   height: 100%;
+}
+
+/* Improve router-link styling */
+.v-list-item {
+  text-decoration: none;
+  color: inherit;
 }
 </style>

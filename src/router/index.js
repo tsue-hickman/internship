@@ -112,7 +112,7 @@ const router = createRouter({
 
 // Navigation guards
 router.beforeEach(async (to, from, next) => {
-  const { isAuthenticated, checkAuth, clearCredentials } = useAuth()
+  const { checkAuth } = useAuth()
   const storedUsername = checkAuth()
 
   // Update document title
@@ -121,12 +121,15 @@ router.beforeEach(async (to, from, next) => {
   // Authentication check
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!storedUsername) {
+      // Store the original route to redirect after login
+      localStorage.setItem('redirectTo', to.fullPath)
       next({
         path: '/login',
         query: { redirect: to.fullPath }
       })
     } else {
       // Optional: Role-based access control
+      const user = useAuth().user // Assuming the `useAuth()` store holds user info
       if (to.meta.roles && !to.meta.roles.includes(user?.role)) {
         next({ path: '/' })
       } else {
@@ -140,4 +143,12 @@ router.beforeEach(async (to, from, next) => {
   }
 })
 
+// After login, redirect the user to the original route
+const loginSuccessRedirect = () => {
+  const redirectTo = localStorage.getItem('redirectTo') || '/home'
+  localStorage.removeItem('redirectTo')
+  router.push(redirectTo)
+}
+
+export { loginSuccessRedirect }
 export default router
