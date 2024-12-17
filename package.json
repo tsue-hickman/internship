@@ -17,6 +17,7 @@
     "@mdi/font": "^7.4.47",
     "@tweenjs/tween.js": "^25.0.0",
     "@vueuse/sound": "^2.0.1",
+    "afterwipe": "file:",
     "axios": "^1.7.9",
     "chart.js": "^4.4.6",
     "date-fns": "^4.1.0",
