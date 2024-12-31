@@ -1,6 +1,6 @@
 <template>
-  <v-parallax 
-    :src="backgroundImage" 
+  <v-parallax
+    :src="backgroundImage"
     height="100vh"
     class="customer-dashboard"
   >
@@ -17,7 +17,7 @@
               </v-col>
               <v-col cols="12" md="4">
                 <v-text-field
-                  v-model="search"
+                  v-model="search".''
                   density="comfortable"
                   prepend-inner-icon="mdi-magnify"
                   label="Search Customers"
